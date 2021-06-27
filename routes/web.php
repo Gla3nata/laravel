@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+$array = array("Нововсть главная", "Нововсть запасная", "Нововсть дополнительная");
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,9 +21,18 @@ Route::get('/', function () {
 Route::get('/hi/{name}', function (string $name) {
     return "Welcome to the page, {$name}";
 });
-Route::get('/hi/{information}', function (string $info) {
-    return "Page info, {$info}";
+Route::get('/information', function () {
+    return "Page info";
 });
-Route::get('/hi/news/{id}', function (string $id) {
-    return "Новость 1, {$id}";
+Route::get('/news/{id}', function (int $id) use ($array) {
+    if (sizeof($array) <= $id) {
+        return "Мы уже даелаем эту новость, загляните завтра.";
+    } else {
+        return $array[$id];
+    }
+
+});
+
+Route::get('/news', function () use ($array) {
+    return implode("<br/>", $array);
 });
