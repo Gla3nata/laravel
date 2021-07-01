@@ -16,14 +16,33 @@ class Controller extends BaseController
 
     protected function getNews(): array
     {
-        $faker = Factory::create( 'ru_Ru');
-        for($i = 0; $i < 5; $i++) {
-            $j = $i+1;
+        $faker = Factory::create('ru_Ru');
+        for ($i = 0; $i < 5; $i++) {
+            $j = $i + 1;
             $this->news[] = [
-                'title' => " Новость ". $j,
-                'description' => $faker ->text(100)
+                'title' => " Новость " . $j,
+                'idCategory' => $j,
+                'description' => $faker->text(100)
+
             ];
         }
+
+        return $this->news;
+    }
+
+
+    protected function getCategory(): array
+    {
+        $array = array('Спорт', 'Туризм', 'Политика', 'Музыка', 'Общество');
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->news[] = [
+                'id' => $i + 1,
+                'description' => $array[$i]
+            ];
+        }
+
+
         return $this->news;
     }
 }
