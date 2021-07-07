@@ -15,9 +15,9 @@ class CategotyController extends Controller
     public function index()
     {
       return view( 'admin.categories.index', [
-        'categoriesList' => $this->getCategory()
+        'categoryList' => []
     ]);
-//        return "Список категрий";
+//        return "Список категрий"; $this->getCategory()
     }
 
     /**

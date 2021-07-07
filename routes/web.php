@@ -28,7 +28,7 @@ Route::get('/hi', function (string $name) {
 Route::get('/wellcome', [WellcomeController::class, 'index']);
 
 //admin
-Route::group(['prefix' => 'admin', 'as' => 'admin. '], function() {
+Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
     Route::resource('news', AdminNewsController::class);
     Route::get( '/news/{id}', [AdminNewsController::class, 'show'])
         ->where('id', '\d+')
