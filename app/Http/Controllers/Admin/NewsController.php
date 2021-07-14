@@ -26,8 +26,8 @@ class NewsController extends Controller
      */
     public function create()
     {
-        //
-    }
+        return view('admin.news.create');
+            }
 
     /**
      * Store a newly created resource in storage.
@@ -37,7 +37,12 @@ class NewsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => ['required','string']
+        ]);
+
+        $data = $request->only(['title', 'status', 'description']);
+        dd($data);
     }
 
     /**

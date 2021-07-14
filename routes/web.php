@@ -20,8 +20,12 @@ use App\Http\Controllers\Admin\CategotyController as AdminCategoryController;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return response()->json([
+        'title' => 'Example',
+        'description' => 'ExampleDescription'
+    ]);
 });
+
 Route::get('/hi', function (string $name) {
     return "Welcome to the page, {$name}";
 });
@@ -29,6 +33,7 @@ Route::get('/wellcome', [WellcomeController::class, 'index']);
 
 //admin
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
+    Route::view('/', 'admin.index');
     Route::resource('news', AdminNewsController::class);
     Route::get( '/news/{id}', [AdminNewsController::class, 'show'])
         ->where('id', '\d+')
