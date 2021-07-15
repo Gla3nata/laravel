@@ -27,16 +27,15 @@
                         </thead>
 
                         <tbody>
-                        @forelse($categoryList as  $category)
+                        @forelse($categoryList as $category)
                             <tr>
-                                <td>{{ $loop->index}}</td>
-                                <td>{{ $category['title']}}</td>
-                                <td>{{ $category['description']}}</td>
-                                <td>{{ now()->format('d-m-Y  H:i') }}</td>
-                                <td><a href="{{ route('admin.categories.edit', ['news' => $loop->index]) }}" style="font-size: 12px;">редактировать</a> &nbsp; | &nbsp;
-                                    <a href="javascript:;" style="font-size: 12px; color:red;">удалить</a>
+                                <td>{{ $category->id }}</td>
+                                <td>{{ $category->title }}</td>
+                                <td>{{ $category->description }}</td>
+                                <td>{{ $category->created_at }}</td>
+                                <td><a href="{{ route('admin.categories.edit', ['category' => $category->id]) }}" style="font-size: 12px;">ред.</a> &nbsp; | &nbsp;
+                                    <a href="javascript:;" style="font-size: 12px; color:red;">Уд.</a>
                                 </td>
-                                <td>$320,800</td>
                             </tr>
                         @empty
                             <tr>
