@@ -36,7 +36,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
     Route::view('/', 'admin.index');
     Route::resource('news', AdminNewsController::class);
     Route::get( '/news/{id}', [AdminNewsController::class, 'show'])
-        ->where('id', '\d+')
+        ->where('news', '\d+')
         ->name('news.show');
 
     Route::resource('categories', AdminCategoryController::class);
@@ -45,11 +45,20 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
         ->name('category.show');
 });
 
-Route::get( '/news', [NewsController::class, 'index']);
-Route::get( '/news/{id}', [NewsController::class, 'show'])
-    ->where('id', '\d+')
+//site
+Route::get('/news', [NewsController::class, 'index'])
+    ->name('news');
+Route::get('/news/{news}', [NewsController::class, 'show'])
+    ->where('news', '\d+')
     ->name('news.show');
 
+Route::get('collections', function() {
+    $collection = collect([
+        1,2,3,4,9,13,15,28,29,33,39,54
+    ]);
+
+    dd($collection->chunk(3));
+});
 
 //Route::get( '/categories', [AdminCategoryController::class, 'index']);
 //Route::get( '/categories/{id}', [AdminCategoryController::class, 'show'])
