@@ -17,9 +17,24 @@
                 <form method="post" action="{{ route ('admin.news.store') }}">
                     @csrf
                     <div class="form-group">
-                        <label for="title">Заголовок</label>
-                        <input type="text" class="form-control" id="title" name="title" {{old ('title') }}>
+                        <label for="category">Категория</label>
+                        <select class="form-control" name="category_id" id="category">
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}"
+                                        @if(old('category_id') === $category->id) selected @endif>
+                                    {{ $category->title }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div><br>
+                    <div class="form-group">
+                        <label for="title">Заголовок</label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{old ('title') }}">
+                    </div><br>
+                    <div class="form-group">
+                        <label for="image">Изображение</label>
+                        <input type="file" class="form-control" id="image" name="image">
+                    </div>
                     <div class="form-group">
                     <label for="status">Статус</label>
                     <select class="form-control" name="status" id="status">

@@ -15,16 +15,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categoryModel = new Category();
-        $categories = ($categoryModel->getCategories());
-//        dd($categories);
-//        dd($categoryModel->getCategoryById(33));
-//        dd(
-        $categories =   \DB::table('categories')
-                ->join('news', 'categories.id', '=', 'news.category_id')
-                ->select(['news.*', 'categories.title as categoryTitle', 'categories.description as categoryDescription', 'categories.color as categoryColor'])
-                ->get();
-//        );
+        $categories = Category:: with(['news'])
+        ->select(['id', 'title', 'description', 'created_at'])
+            ->orderBy('id', 'desc')
+            ->get();
+
         return view('admin.categories.index', [
             'categoryList' => $categories
         ]);
@@ -38,7 +33,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.categories.create');
     }
 
     /**
@@ -49,7 +44,16 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $category = Category:: create(
+            $request->only(['title', 'color', 'description'])
+        );
+
+        if ($category) {
+            return redirect()->route('admin.categories.index')
+                ->with('success', 'Категория успешно создана');
+        }
+        return back()->with('error', 'Не удалось создать запись');
+
     }
 
     /**
@@ -71,7 +75,9 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        dd($category);
+        return view('admin.categories.edit', [
+            'category' => $category
+        ]);
     }
 
     /**
@@ -81,18 +87,26 @@ class CategoryController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Category $category)
     {
-        //
+        $statusCategory = $category->fill(
+            $request->only(['title', 'color', 'description'])
+        )->save();
+
+        if ($statusCategory) {
+            return redirect()->route('admin.categories.index')
+                ->with('success', 'Категория успешно обновлена');
+        }
+        return back()->with('error', 'Не удалось обновить запись');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param Category $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Category $category)
     {
         //
     }
