@@ -34,8 +34,10 @@
                                 <td>{{ $news->title }}</td>
                                 <td>{{ $news->description }}</td>
                                 <td>{{ $news->created_at->format('d-m-Y  H:i') }}</td>
-                                <td><a href="{{ route('admin.news.edit', ['news' => $news]) }}" style="font-size: 12px;">редактировать</a> &nbsp; | &nbsp;
-                                    <a href="javascript:;" style="font-size: 12px; color:red;">удалить</a>
+                                <td><a href="{{ route('admin.news.edit', ['news' => $news]) }}"
+                                       style="font-size: 12px;">редактировать</a> &nbsp; | &nbsp;
+                                    <a href="javascript:;" class="delete" rel="{{ $news->id }}"
+                                       style="font-size: 12px; color:red;">удалить</a>
                                 </td>
                                 <td>$320,800</td>
                             </tr>
@@ -52,3 +54,25 @@
     </main>
 
 @endsection
+@push('js')
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script>
+               $(function () {
+            $(".delete").on('click', function () {
+                if (confirm("Подтвердите удаление")) {
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: "DELETE",
+                        url: "/admin/news/" + $(this).attr('rel'),
+                        complete: function () {
+                            alert("Запись удаленa");
+                            location.reload();
+                        }
+                    })
+                }
+            })
+        });
+    </script>
+@endpush
