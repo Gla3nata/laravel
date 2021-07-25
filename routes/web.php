@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 use App\Http\Controllers\NewsController;
-use \App\Http\Controllers\WellcomeController;
-use \App\Http\Controllers\Admin\NewsController as AdminNewsController;
+use App\Http\Controllers\Account\IndexController as AccountController;
+use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 
 
@@ -31,20 +31,6 @@ Route::get('/hi', function (string $name) {
 });
 Route::get('/wellcome', [WellcomeController::class, 'index']);
 
-//admin
-Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
-    Route::view('/', 'admin.index');
-    Route::resource('news', AdminNewsController::class);
-    Route::get( '/news/{id}', [AdminNewsController::class, 'show'])
-        ->where('news', '\d+')
-        ->name('news.show');
-
-    Route::resource('categories', AdminCategoryController::class);
-    Route::get( '/categories/{id}', [AdminCategoryController::class, 'show'])
-        ->where('id', '\d+')
-        ->name('category.show');
-});
-
 //site
 Route::get('/news', [NewsController::class, 'index'])
     ->name('news');
@@ -52,16 +38,32 @@ Route::get('/news/{news}', [NewsController::class, 'show'])
     ->where('news', '\d+')
     ->name('news.show');
 
-Route::get('collections', function() {
-    $collection = collect([
-        1,2,3,4,9,13,15,28,29,33,39,54
-    ]);
+Route::get('session', function() {
+    session(['newSession' => 'newValue']);
+    if(session()->has('newSession')) {
 
-    dd($collection->chunk(3));
+        session()->remove('newSession');
+    }
+
+    return "Сессии нет";
 });
 
-//Route::get( '/categories', [AdminCategoryController::class, 'index']);
-//Route::get( '/categories/{id}', [AdminCategoryController::class, 'show'])
-//    ->where('id', '\d+')
-//   ->name('category.show');
+//backoffice
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/account', AccountController::class)
+        ->name('account');
+    Route::get('/logout', function () {
+        \Auth::logout();
+        return redirect()->route('login');
+    })->name('logout');
 
+//admin
+    Route::group(['prefix' => 'admin', 'middleware' => 'admin', 'as' => 'admin.'], function() {
+        Route::view('/', 'admin.index')->name('index');
+        Route::resource('news', AdminNewsController::class);
+        Route::resource('categories', AdminCategoryController::class);
+    });
+});
+
+Auth::routes();
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
