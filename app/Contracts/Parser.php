@@ -3,7 +3,7 @@
 namespace  App\Contracts;
 
 
-interface ParserContract
+interface Parser
 {
     public function getParsedList(string $url): array;
 }

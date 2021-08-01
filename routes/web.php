@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\Admin\ParserController;
@@ -28,10 +29,8 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/hi', function (string $name) {
-    return "Welcome to the page, {$name}";
-});
-Route::get('/wellcome', [WellcomeController::class, 'index']);
+
+
 
 //site
 Route::get('/news', [NewsController::class, 'index'])
@@ -39,6 +38,7 @@ Route::get('/news', [NewsController::class, 'index'])
 Route::get('/news/{news}', [NewsController::class, 'show'])
     ->where('news', '\d+')
     ->name('news.show');
+
 
 Route::get('session', function() {
     session(['newSession' => 'newValue']);
@@ -59,7 +59,7 @@ Route::group(['middleware' => 'auth'], function () {
         return redirect()->route('login');
     })->name('logout');
 
-//admin
+    //admin
     Route::group(['prefix' => 'admin', 'middleware' => 'admin', 'as' => 'admin.'], function() {
         Route::view('/', 'admin.index')->name('index');
         Route::resource('news', AdminNewsController::class);
@@ -67,6 +67,13 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/parse', ParserController::class);
     });
+});
+
+Route::group(['middleware' => 'guest'], function() {
+    Route::get('/init/{driver?}', [SocialController::class, 'init'])
+        ->name('social.init');
+    Route::get('/callback/{driver?}', [SocialController::class, 'callback'])
+        ->name('social.callback');
 });
 
 Auth::routes();

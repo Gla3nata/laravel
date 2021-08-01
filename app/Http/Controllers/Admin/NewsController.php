@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\NewsUpdate;
 use App\Models\Category;
 use App\Models\News;
-use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class NewsController extends Controller
 {
@@ -19,7 +19,7 @@ class NewsController extends Controller
      */
     public function index()
     {
-        $news = News::orderBy('id', 'desc')->get();
+        $news =  News::orderBy('id', 'desc')->get();
         return view('admin.news.index', [
             'newsList' => $news
         ]);
@@ -32,7 +32,7 @@ class NewsController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories  = Category::all();
         return view('admin.news.create', [
             'categories' => $categories
         ]);
@@ -41,39 +41,43 @@ class NewsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         $request->validate([
-            'title' => ['required', 'string','min:3', 'max:199'],
-            'category_id' => ['required', 'integer','min:1'],
+            'title' => ['required', 'string', 'min:3', 'max:199'],
+            'category_id' => ['required', 'integer', 'min:1'],
             'status' => ['required'],
             'description' => ['sometimes']
         ]);
 
+        //curl get films --
         $data = $request->only(['category_id', 'title', 'status', 'description']);
         $data['slug'] = Str::slug($data['title']);
 
+
+
         $news = News::create($data);
 
-        if ($news) {
+        if($news) {
             return redirect()->route('admin.news.index')
-                ->with('success', 'Новость успешно создана');
+                ->with('success', 'Запись успешно создана');
         }
+
         return back()->with('error', 'Не удалось создать запись');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(int $id)
+    public function show($id)
     {
-        return "Новость в админке с ID={$id}";
+        //
     }
 
     /**
@@ -84,33 +88,43 @@ class NewsController extends Controller
      */
     public function edit(News $news)
     {
-        $categories = Category::all();
+        $categories  = Category::all();
         return view('admin.news.edit', [
             'news' => $news,
             'categories' => $categories
         ]);
     }
 
-
     /**
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param News $news
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(NewsUpdate $request, News $news)
     {
         $data = $request->validated();
         $data['slug'] = Str::slug($data['title']);
 
+        if($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = md5($file->getClientOriginalName() . time());
+            $fileExt = $file->getClientOriginalExtension();
+
+            $newFileName = $fileName . "." . $fileExt;
+
+            $data['image'] = $file->storeAs('news', $newFileName, 'public');
+        }
+
         $statusCategory = $news->fill($data)->save();
 
         if ($statusCategory) {
             return redirect()->route('admin.news.index')
-                ->with('success', trans('message.admin.news.updated.success'));
+                ->with('success', __('message.admin.news.updated.success'));
         }
-        return back()->with('error', trans('message.admin.news.updated.fail'));
+
+        return back()->with('error', __('message.admin.news.updated.fail'));
     }
 
     /**
@@ -121,13 +135,12 @@ class NewsController extends Controller
      */
     public function destroy(Request $request, News $news)
     {
-        if ($request->ajax()) {
+        if($request->ajax()) {
             try {
                 $news->delete();
             } catch (\Exception $e) {
                 report($e);
             }
         }
-
     }
 }
