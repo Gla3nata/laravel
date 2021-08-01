@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Contracts\ParserContract;
+use App\Contracts\Parser;
 
-class ParserService implements ParserContract
+class ParserService implements Parser
 {
     public function getParsedList(string $url): array
     {
